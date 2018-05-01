@@ -1,3 +1,4 @@
+// Package gfx is the graphics part of the game engine I'm developing.
 package gfx
 
 import "github.com/go-gl/gl/v3.3-core/gl"

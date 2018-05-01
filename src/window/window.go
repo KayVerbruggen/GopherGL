@@ -1,3 +1,4 @@
+// Package window is pretty much just a wrapper around GLFW.
 package window
 
 import (
@@ -26,6 +27,7 @@ type Window struct {
 	X, Y   uint32
 	vsync  bool
 	handle *glfw.Window
+	aspectChanged bool
 }
 
 func (w *Window) resizeCallback(glfwWin *glfw.Window, x, y int) {
@@ -34,8 +36,13 @@ func (w *Window) resizeCallback(glfwWin *glfw.Window, x, y int) {
 	// This will keep the aspect ratio correct.
 	w.X = uint32(x)
 	w.Y = uint32(y)
+	w.aspectChanged = true
 }
 
+// AspectChanged returns whether or not the aspect ratio has been changed.
+func (w *Window) AspectChanged() bool {
+	return w.aspectChanged
+}
 
 // SetScrollCallback takes in a function which will run when scrolling.
 func (w *Window) SetScrollCallback(scb glfw.ScrollCallback) {
@@ -43,7 +50,8 @@ func (w *Window) SetScrollCallback(scb glfw.ScrollCallback) {
 }
 
 // CreateWindow initializes GLFW, creates a OpenGL context and opens a window.
-func CreateWindow(x, y uint32, name string, vsync bool) *Window {
+func CreateWindow(x, y uint32, name string, vsync bool) (*Window, error) {
+	// Lock the goroutine to one thread, because OpenGL doesn't support multithreading nor switching threads.
 	runtime.LockOSThread()
 
 	w := &Window{}
@@ -52,7 +60,9 @@ func CreateWindow(x, y uint32, name string, vsync bool) *Window {
 	w.vsync = vsync
 
 	err := glfw.Init()
-	check(err)
+	if err != nil {
+		return nil, err
+	}
 
 	// Set the correct window hints.
 	glfw.WindowHint(glfw.ContextVersionMajor, 3)                // OpenGL version 3.3
@@ -62,7 +72,9 @@ func CreateWindow(x, y uint32, name string, vsync bool) *Window {
 	glfw.WindowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile) // Core profile to prevent using deprecated stuff.
 
 	w.handle, err = glfw.CreateWindow(int(x), int(y), name, nil, nil)
-	check(err)
+	if err != nil {
+		return nil, err
+	}
 	w.handle.MakeContextCurrent()
 
 	// Enable V-Sync to not use 18% CPU for a simple Gopher.
@@ -71,7 +83,9 @@ func CreateWindow(x, y uint32, name string, vsync bool) *Window {
 	}
 
 	err = gl.Init()
-	check(err)
+	if err != nil {
+		return nil, err
+	}
 	gl.Viewport(0, 0, int32(w.X), int32(w.Y))
 	// This allows us to use transparency with PNG files.
 	gl.Enable(gl.BLEND)
@@ -86,7 +100,7 @@ func CreateWindow(x, y uint32, name string, vsync bool) *Window {
 	// Set the GLFW callbacks.
 	w.handle.SetFramebufferSizeCallback(w.resizeCallback)
 
-	return w
+	return w, nil
 }
 
 // Update swaps the buffers and checks for glfw events.
