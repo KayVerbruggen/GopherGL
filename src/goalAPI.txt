@@ -1,0 +1,43 @@
+package main
+
+import (
+    window,
+    gfx,
+    camera,
+    input,
+)
+
+func handleInput() {
+
+}
+
+func main() {
+    w := window.Create()
+    r := gfx.CreateRenderer(w)
+    input.Init(w)
+    cam := camera.CreateFPP(FOV, aspect)
+
+    // For now. Level editor that exports in a specific file format would be way nicer.
+    // It doesnt have to have fancy features, just adding meshes with textures and lights.
+    // You can then change the properties of these entities, such as position and rotation.
+    // Example:
+    // scene := gfx.LoadScene("test.scn")
+    mat = gfx.CreateMaterial("albedoTex.png", "specTex.png", "normalTex.png")
+    cube := gfx.CreateModel("cube.obj", mat)
+
+    scene := gfx.CreateScene(camera, cube, light)
+
+    for w.isOpen() {
+        handleInput(cam)
+        cam.Update()
+
+        r.BeginFrame()
+
+        // Rendering
+        r.Render(scene)
+
+        r.EndFrame()
+
+        window.Update()
+    }
+}
