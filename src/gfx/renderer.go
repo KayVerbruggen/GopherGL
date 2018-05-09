@@ -23,6 +23,7 @@ func (r *Renderer) Render(e *Entity) {
 	gl.ActiveTexture(gl.TEXTURE1)
 	gl.BindTexture(gl.TEXTURE_2D, e.mat.specID)
 
+	
 	gl.BindVertexArray(e.vao)
 	gl.DrawElements(gl.TRIANGLES, e.size, gl.UNSIGNED_INT, gl.Ptr(nil))
 }

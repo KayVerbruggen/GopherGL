@@ -35,8 +35,13 @@ struct material {
     float shininess;
 };
 
+struct light {
+    float intensity;
+    vec3 direction;
+};
+
+uniform light sun;
 uniform material mat;
-uniform vec3 lightPos;
 uniform vec3 viewPos;
 
 void main() { 
@@ -46,8 +51,8 @@ void main() {
     vec3 ambient = 0.1 * vec3(texture(mat.diffTex, fragTexCoords));
 
     // Diffuse lighting.
+    vec3 lightDir = normalize(-sun.direction);
     vec3 norm = normalize(fragNormal);
-    vec3 lightDir = normalize(lightPos - fragPos);
     float diff = max(dot(norm, lightDir), 0.0);
     vec3 diffuse = diff * vec3(texture(mat.diffTex, fragTexCoords));
 

@@ -24,9 +24,9 @@ func check(err error) {
 
 // Window stores a glfw handle, x and y dimensions and if vsync is enables.
 type Window struct {
-	X, Y   uint32
-	vsync  bool
-	handle *glfw.Window
+	X, Y          uint32
+	vsync         bool
+	handle        *glfw.Window
 	aspectChanged bool
 }
 
@@ -42,6 +42,11 @@ func (w *Window) resizeCallback(glfwWin *glfw.Window, x, y int) {
 // AspectChanged returns whether or not the aspect ratio has been changed.
 func (w *Window) AspectChanged() bool {
 	return w.aspectChanged
+}
+
+// GlfwHandle returns the exactly that.
+func (w *Window) GlfwHandle() *glfw.Window {
+	return w.handle
 }
 
 // SetScrollCallback takes in a function which will run when scrolling.
@@ -131,7 +136,7 @@ func (w *Window) DeltaTime() float32 {
 
 // FPS returns the frames per second.
 func (w *Window) FPS() float32 {
-	return 1.0/deltaTime
+	return 1.0 / deltaTime
 }
 
 // Time returns the time since GLFW has been initialized.
