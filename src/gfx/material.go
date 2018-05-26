@@ -58,5 +58,6 @@ func CreateMaterial(fileTex, fileSpec string, shininess float32) *Material {
 	check(err)
 	specID, err := createTex(fileSpec)
 	check(err)
+
 	return &Material{texID, specID, shininess}
 }

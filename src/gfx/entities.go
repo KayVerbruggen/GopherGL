@@ -25,7 +25,7 @@ func CreateCube(posX, posY, posZ, rotX, rotY, rotZ float32, mat *Material) *Enti
 	c.Trans = c.Trans.Mul4(mgl32.Translate3D(posX, posY, posZ))
 	c.mat = mat
 
-	vertices := []float32{
+	vertices := []float32 {
 		// positions      tex coords normals
 		// Back quad.
 		0.5, -0.5, -0.5, 0.0, 0.0, 0.0, 0.0, -1.0,
@@ -112,6 +112,83 @@ func CreateCube(posX, posY, posZ, rotX, rotY, rotZ float32, mat *Material) *Enti
 
 	return c
 }
+
+/*
+func loadMesh(file string) ([]mgl32.Vec3, []mgl32.Vec2, []mgl32.Vec3, []uint32) {
+	// Read the file.
+	src, err := os.Open(file)
+	defer src.Close()
+	check(err)
+
+	var vertices []mgl32.Vec3
+	var texCoords []mgl32.Vec2
+	var normals []mgl32.Vec3
+	var indices []uint32
+
+	// Loops through each line.
+	for {
+		var lineType string
+		fmt.Fscanf(src, "%s", lineType)
+		switch lineType {
+
+			case "v": // Vertices
+			v := mgl32.Vec3{}
+			fmt.Fscanf(src, "%f %f %f\n", &v[0], &v[1], &v[2])
+			vertices = append(vertices, v)
+
+			case "vt": // Texture coordinates
+			t := mgl32.Vec2{}
+			fmt.Fscanf(src, "%f %f\n", &t[0], &t[1])
+			texCoords = append(texCoords, t)
+
+			case "vn": // Normals
+			n := mgl32.Vec3{}
+			fmt.Fscanf(src, "%f %f %f\n", &n[0], &n[1], &n[2])
+			vertices = append(vertices, n)
+
+			case "f": // Faces
+
+		}
+	}
+
+	return vertices, texCoords, normals, indices
+}
+
+// CreateModel will return a model based on a material and an .obj file.
+func CreateModel(objFile string, mat Material) *Entity {
+	vertices, _, _, indices := loadMesh(objFile)
+
+	e := Entity{}
+	e.size = int32(len(indices) * 4)
+
+	gl.GenVertexArrays(1, &e.vao)
+	gl.BindVertexArray(e.vao)
+
+	var vbo uint32
+	gl.GenBuffers(1, &vbo)
+	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
+	gl.BufferData(gl.ARRAY_BUFFER, len(vertices)*4, gl.Ptr(vertices), gl.STATIC_DRAW)
+
+	// Pass data to the shader.
+	// Positions.
+	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, 8*4, gl.PtrOffset(0))
+	gl.EnableVertexAttribArray(0)
+	// Texture coordinates.
+	gl.VertexAttribPointer(1, 2, gl.FLOAT, false, 8*4, gl.PtrOffset(3*4))
+	gl.EnableVertexAttribArray(1)
+	// Normals.
+	gl.VertexAttribPointer(2, 3, gl.FLOAT, false, 8*4, gl.PtrOffset(5*4))
+	gl.EnableVertexAttribArray(2)
+
+	var ibo uint32
+	// Store the indices in a buffer.
+	gl.GenBuffers(1, &ibo)
+	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo)
+	gl.BufferData(gl.ELEMENT_ARRAY_BUFFER, int(e.size), gl.Ptr(indices), gl.STATIC_DRAW)
+
+	return &e
+}
+*/
 
 // SetRot takes in x, y, and z values in degrees and rotates the Entity.
 func (e *Entity) SetRot(x, y, z float32) {

@@ -36,22 +36,25 @@ struct Material {
 };
 
 struct Light {
-    float intensity;
-    vec3 direction;
-};
+    vec3 position;  
+  
+    vec3 diffuse;
+	
+    float constant;
+    float linear;
+    float quadratic;
+}; 
 
-uniform Light sun;
+uniform Light pl;
 uniform Material mat;
 uniform vec3 viewPos;
 
 void main() { 
     // Color of the texture
     vec4 albedo = texture(mat.diffTex, fragTexCoords);
-    // Minimum light.
-    vec3 ambient = 0.1 * vec3(texture(mat.diffTex, fragTexCoords));
 
     // Diffuse lighting.
-    vec3 lightDir = normalize(-sun.direction);
+    vec3 lightDir = normalize(pl.position - fragPos);
     vec3 norm = normalize(fragNormal);
     float diff = max(dot(norm, lightDir), 0.0);
     vec3 diffuse = diff * vec3(texture(mat.diffTex, fragTexCoords));
@@ -61,6 +64,14 @@ void main() {
     vec3 reflectDir = reflect(-lightDir, norm);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
     vec3 specular = mat.shininess * spec * vec3(texture(mat.specTex, fragTexCoords));
-    
-    result = vec4(ambient + diffuse + specular, 1.0);
+
+    float distance    = length(pl.position - fragPos);
+    float attenuation = 1.0 / (pl.constant + pl.linear * distance + 
+    		    pl.quadratic * (distance * distance));
+
+    diffuse *= attenuation;
+    specular *= attenuation;
+
+    vec3 color = diffuse + specular;
+    result = vec4(color, 1.0);
 }

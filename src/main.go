@@ -49,23 +49,19 @@ func main() {
 	window, err := window.CreateWindow(800, 600, "GopherGL", true)
 	check(err)
 
+	gfx.InitRenderer()
+
 	input.Init(window)
-	renderer := gfx.Renderer{}
 	cam := camera.CreateCamera(mgl32.Vec3{0.0, 0.0, 3.0}, float32(window.X)/float32(window.Y), 90.0)
 
-	// Set the correct shader and texture.
-	shader := gfx.CreateShader("../shaders/basic.glsl")
-
 	// This is the sun of the scene.
-	gfx.CreateDirectionalLight(shader, mgl32.Vec3{0.5, -0.5, 0.0}, 0.1)
+	sun := gfx.CreateDirectionalLight(mgl32.Vec3{0.5, -0.5, 0.0}, 1.0)
 
 	cubeMat := gfx.CreateMaterial("../res/containerTex.png", "../res/containerSpec.png", 1.0)
-	shader.SetUniformFloat("mat.shininess", cubeMat.Shininess)
 	cube := gfx.CreateCube(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, cubeMat)
 
 	// TODO: This should be handled differently. Most of it can be done when creating the objects.
 	// Set uniform.
-	shader.SetUniformMat4("model", cube.Trans)
 
 	for window.IsOpen() {
 		handleInput(window, 3.0, cam)
@@ -75,15 +71,14 @@ func main() {
 			cam.SetProjection(float32(window.X)/float32(window.Y), 90.0)
 		}
 
-		cam.Update(shader)
+		cam.Update()
 		
 		// Rotate dirt cube.
 		cube.SetRot(window.Time(), 0.0, window.Time())
-		shader.SetUniformMat4("model", cube.Trans)
 		
 		// OpenGL stuff.
-		renderer.BeginFrame()
-		renderer.Render(cube)
+		gfx.BeginFrame()
+		gfx.Render(cam, cube, sun)
 
 		window.Update()
 	}

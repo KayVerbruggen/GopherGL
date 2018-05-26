@@ -53,7 +53,7 @@ func compileShader(source string, shaderType uint32, length int32) (uint32, erro
 }
 
 // CreateShader sets the shader and takes in a file path.
-func CreateShader(shaderFile string) *Shader {
+func createShader(shaderFile string) *Shader {
 	// Read the file.
 	source, err := os.Open(shaderFile)
 	defer source.Close()
