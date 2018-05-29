@@ -66,6 +66,7 @@ func main() {
 	for window.IsOpen() {
 		handleInput(window, 3.0, cam)
 
+		// TODO: I think this should be handled in the API itself.
 		// Keeps the aspect ratio correct
 		if window.AspectChanged() {
 			cam.SetProjection(float32(window.X)/float32(window.Y), 90.0)
